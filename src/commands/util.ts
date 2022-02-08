@@ -5,14 +5,14 @@ import { MessageEmbed } from "discord.js";
 @Discord()
 @Category("Util")
 class Util {
-    @SimpleCommand("ping")
+    @SimpleCommand("ping", { description: "Check the response time" })
     async ping({ message }: SimpleCommandMessage) {
         const then = Date.now();
         const msg = await message.reply("Pinging...");
         msg.edit(`🏓 Latency is \`${Date.now()-then}ms\`. API Latency is \`${Math.round(message.client.ws.ping)}ms\``);
     }
 
-    @SimpleCommand("help")
+    @SimpleCommand("help", { description: "Learn how to use the bot" })
     help(
         @SimpleCommandOption("command")
         command: string,
