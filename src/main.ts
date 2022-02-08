@@ -1,11 +1,13 @@
+import "dotenv/config";
 import "reflect-metadata";
 import { Intents, Interaction, Message } from "discord.js";
 import { Client } from "discordx";
 import { dirname, importx } from "@discordx/importer";
+import { NotBot } from "@discordx/utilities";
 
 export const client = new Client({
     simpleCommand: {
-        prefix: "!",
+        prefix: ".",
     },
     intents: [
         Intents.FLAGS.GUILDS,
@@ -15,7 +17,13 @@ export const client = new Client({
         Intents.FLAGS.GUILD_VOICE_STATES,
     ],
     // If you only want to use global commands only, comment this line
-    botGuilds: [(client) => client.guilds.cache.map((guild) => guild.id)],
+    botGuilds: [client => client.guilds.cache.map(guild => guild.id)],
+    allowedMentions: {
+        users: [],
+        roles: [],
+        repliedUser: false
+    },
+    guards: [NotBot],
 });
 
 client.once("ready", async () => {
@@ -50,12 +58,12 @@ client.on("messageCreate", (message: Message) => {
 
 async function run() {
     await importx(
-        dirname(import.meta.url) + "/commnads/*.ts"
+        dirname(import.meta.url) + "/commands/*.ts"
     );
 
     // let's start the bot
     if (!process.env.DISCORD_TOKEN) {
-        throw Error("Could not find BOT_TOKEN in your environment");
+        throw Error("Could not find DISCORD_TOKEN in your environment");
     }
     await client.login(process.env.DISCORD_TOKEN);
 }
