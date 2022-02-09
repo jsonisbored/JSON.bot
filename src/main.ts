@@ -7,7 +7,7 @@ import { NotBot } from "@discordx/utilities";
 
 export const client = new Client({
     simpleCommand: {
-        prefix: ".",
+        prefix: "!",
     },
     intents: [
         Intents.FLAGS.GUILDS,
