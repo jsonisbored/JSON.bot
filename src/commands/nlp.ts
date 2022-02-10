@@ -1,4 +1,4 @@
-import { Discord, SimpleCommand, Permission, SimpleCommandMessage } from "discordx";
+import { Discord, SimpleCommand, SimpleCommandMessage, SimpleCommandOption } from "discordx";
 import { Category } from "@discordx/utilities";
 import axios from "axios";
 import { Message } from "discord.js";
@@ -10,7 +10,8 @@ interface Response {
 }
 
 @Discord()
-class GPT {
+@Category("NLP")
+class NLP {
     sleep(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -22,7 +23,6 @@ class GPT {
     lastGpt = 0;
 
 
-    @Category("Fun")
     @SimpleCommand("gpt")
     async text({ message, argString }: SimpleCommandMessage) {
         this.queue.push({
