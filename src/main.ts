@@ -1,71 +1,30 @@
-import "dotenv/config";
-import "reflect-metadata";
-import { Intents, Interaction, Message } from "discord.js";
-import { Client } from "discordx";
-import { dirname, importx } from "@discordx/importer";
-import { NotBot } from "@discordx/utilities";
+import {
+    createBot,
+    startBot,
+    ActivityTypes,
+} from "./deps.ts";
+import {
+    DISCORD_TOKEN,
+    BOT_ID,
+} from "./config.ts";
 
-export const client = new Client({
-    simpleCommand: {
-        prefix: "!",
-    },
-    intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-        Intents.FLAGS.GUILD_VOICE_STATES,
+
+export const bot = createBot({
+    token: DISCORD_TOKEN,
+    intents: ["Guilds", "GuildMessages"],
+    botId: BOT_ID,
+    events: {},
+});
+
+bot.gateway.presence = {
+    status: "online",
+    activities: [
+        {
+            name: "Testing",
+            type: ActivityTypes.Game,
+            createdAt: Date.now(),
+        },
     ],
-    // If you only want to use global commands only, comment this line
-    botGuilds: [client => client.guilds.cache.map(guild => guild.id)],
-    allowedMentions: {
-        users: [],
-        roles: [],
-        repliedUser: false
-    },
-    guards: [NotBot],
-});
+};
 
-client.once("ready", async () => {
-    // make sure all guilds are in cache
-    await client.guilds.fetch();
-
-    // init all application commands
-    await client.initApplicationCommands({
-        guild: { log: true },
-        global: { log: true },
-    });
-
-    // init permissions; enabled log to see changes
-    await client.initApplicationPermissions(true);
-
-    // uncomment this line to clear all guild commands,
-    // useful when moving to global commands from guild commands
-    //  await client.clearApplicationCommands(
-    //    ...client.guilds.cache.map((g) => g.id)
-    //  );
-
-    console.log("Bot started");
-});
-
-client.on("interactionCreate", (interaction: Interaction) => {
-    client.executeInteraction(interaction);
-});
-
-client.on("messageCreate", (message: Message) => {
-    client.executeCommand(message);
-});
-
-async function run() {
-    await importx(
-        dirname(import.meta.url) + "/commands/*.ts"
-    );
-
-    // let's start the bot
-    if (!process.env.DISCORD_TOKEN) {
-        throw Error("Could not find DISCORD_TOKEN in your environment");
-    }
-    await client.login(process.env.DISCORD_TOKEN);
-}
-
-run();
+await startBot(bot);
